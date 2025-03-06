@@ -17,13 +17,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Available API endpoints 
 
-POST /api/products - Create a new product
-GET /api/products - Get a list of all products
-PUT /api/products/:id - Update a product
-DELETE /api/products/:id - Delete a product
-POST /api/auth/register -Register a user
-POST /api/auth/login -Login a user
-GET  /api/products/search?q=term -Search products
+* POST /api/products - Create a new product
+* GET /api/products - Get a list of all products
+* PUT /api/products/:id - Update a product
+* DELETE /api/products/:id - Delete a product
+* POST /api/auth/register -Register a user
+* POST /api/auth/login -Login a user
+* GET  /api/products/search?q=term -Search products
 
 
 
