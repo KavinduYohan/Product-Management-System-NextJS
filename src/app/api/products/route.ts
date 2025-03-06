@@ -21,6 +21,11 @@ export async function POST(req: Request) {
   await ensureDBConnection();
   const newProduct = await req.json();
   const db = getDB();
-  await db.run('INSERT INTO products (name, description) VALUES (?, ?)', [newProduct.name, newProduct.description]);
+  
+  await db.run('INSERT INTO products (name, description, quantity) VALUES (?, ?, ?)', [
+    newProduct.name,
+    newProduct.description,
+    newProduct.quantity,
+  ]);
   return NextResponse.json(newProduct);
 }

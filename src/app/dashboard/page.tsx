@@ -4,12 +4,17 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Dashboard() {
-  const [products, setProducts] = useState<{ id: string | number; name: string; description: string }[]>([]);
+  const [products, setProducts] = useState<{ id: string | number; name: string; description: string; quantity: number }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string } | null>(null);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string; quantity: number } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -29,13 +34,13 @@ export default function Dashboard() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name || !description) return;
+    if (!name || !description || quantity < 1) return;
 
     if (editingProduct) {
       await fetch(`/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({ name, description, quantity }),
       });
       toast.success('Product updated successfully');
       setEditingProduct(null);
@@ -43,23 +48,32 @@ export default function Dashboard() {
       await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({ name, description, quantity }),
       });
       toast.success('Product added successfully');
     }
 
     setName('');
     setDescription('');
+    setQuantity(1);
     setIsModalOpen(false);
     fetchProducts();
   };
 
-  const handleEdit = (product: { id: string | number; name: string; description: string }) => {
+  const handleEdit = (product: { id: string | number; name: string; description: string; quantity: number }) => {
     setEditingProduct(product);
     setName(product.name);
     setDescription(product.description);
+    setQuantity(product.quantity);
     setIsModalOpen(true);
   };
+
+  // Pagination logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const totalPages = Math.ceil(products.length / productsPerPage);
 
   return (
     <div className="min-h-screen bg-white text-black p-6">
@@ -92,15 +106,17 @@ export default function Dashboard() {
             <th className="border p-2">ID</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Description</th>
+            <th className="border p-2">Quantity</th>
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {currentProducts.map((product) => (
             <tr key={product.id} className="border">
               <td className="border p-2">{product.id}</td>
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">{product.description}</td>
+              <td className="border p-2">{product.quantity}</td>
               <td className="border p-2 flex gap-2">
                 <button
                   className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
@@ -119,6 +135,27 @@ export default function Dashboard() {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-4">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-300"
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="text-sm">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-300"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
 
       {/* Modal Popup for Adding/Editing Products */}
       {isModalOpen && (
@@ -139,6 +176,13 @@ export default function Dashboard() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              <input
+                type="number"
+                placeholder="Quantity"
+                className="border p-2 rounded w-full mb-2"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+              />
               <div className="flex justify-end gap-2">
                 <button
                   type="submit"
@@ -154,6 +198,7 @@ export default function Dashboard() {
                     setEditingProduct(null);
                     setName('');
                     setDescription('');
+                    setQuantity(1);
                   }}
                 >
                   Cancel

@@ -14,13 +14,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+ 
+  const { id } = await params;
+  const { name, description, quantity } = await req.json();
+  
   await connectDB();
-  const { name, description } = await req.json();
   const db = getDB();
-  await db.run('UPDATE products SET name = ?, description = ? WHERE id = ?', [name, description, params.id]);
+  
+  await db.run('UPDATE products SET name = ?, description = ?, quantity = ? WHERE id = ?', [name, description, quantity, id]);
+  
   return NextResponse.json({ message: 'Product updated successfully' });
 }
-
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
   const db = getDB();

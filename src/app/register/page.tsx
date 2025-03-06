@@ -48,7 +48,7 @@ const Register = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="p-2.5 mb-4 rounded border border-gray-300 text-base outline-none focus:border-black"
+            className="p-2.5 mb-4 rounded text-black border border-gray-300 text-base outline-none focus:border-black"
           />
           <input
             type="email"
@@ -56,7 +56,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="p-2.5 mb-4 rounded border border-gray-300 text-base outline-none focus:border-black"
+            className="p-2.5 mb-4 rounded text-black border border-gray-300 text-base outline-none focus:border-black"
           />
           <input
             type="password"
@@ -64,11 +64,11 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="p-2.5 mb-4 rounded border border-gray-300 text-base outline-none focus:border-black"
+            className="p-2.5 mb-4 rounded text-black border border-gray-300 text-base outline-none focus:border-black"
           />
           <button 
             type="submit" 
-            className="p-2.5 rounded bg-black text-white text-base cursor-pointer hover:bg-gray-800"
+           className="p-2.5 rounded bg-[#667eea] text-white text-base cursor-pointer transition-colors duration-300 hover:bg-[#5a6ecb]"
           >
             Register
           </button>
