@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   let imageUrl = '';
   if (image) {
     
-    const filePath = path.join(process.cwd(), 'uploads', image.name);
+    const filePath = path.join(process.cwd(), 'public', 'uploads', image.name);
     const buffer = await image.arrayBuffer();
     fs.writeFileSync(filePath, Buffer.from(buffer));
     imageUrl = `/uploads/${image.name}`;
