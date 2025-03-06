@@ -15,7 +15,6 @@ const connectDB = async () => {
     console.log('Database connected.');
   }
 
-  // Ensure users table exists
   await db.exec(
     'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT UNIQUE, password TEXT)'
   );
