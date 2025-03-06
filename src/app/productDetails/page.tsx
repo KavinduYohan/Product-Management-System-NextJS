@@ -32,22 +32,25 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {products.map((product) => (
           <div
-            key={product.id}
-            className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1"
-          >
+          key={product.id}
+          className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col" // Added h-full and flex flex-col
+        >
+          <div className="w-full h-96 overflow-hidden"> 
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-full h-56 object-cover"
+              className="w-full h-full object-cover"
             />
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2 truncate">{product.name}</h2>
-              <p className="text-gray-600 text-sm mb-4">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <p className="text-gray-700 font-semibold">Quantity: {product.quantity}</p>
-              </div>
+          </div>
+          <div className="p-6 flex-1"> 
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 truncate">{product.name}</h2>
+            <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-gray-700 font-semibold">Quantity: {product.quantity}</p>
             </div>
           </div>
+        </div>
+         
         ))}
       </div>
 
