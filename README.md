@@ -23,6 +23,7 @@ PUT /api/products/:id - Update a product
 DELETE /api/products/:id - Delete a product
 POST /api/auth/register -Register a user
 POST /api/auth/login -Login a user
+GET  /api/products/search?q=term -Search products
 
 
 
