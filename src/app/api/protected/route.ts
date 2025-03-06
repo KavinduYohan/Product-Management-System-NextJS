@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
+// import { NextResponse } from 'next/server';
 
-export const GET = (req: Request) => {
-  return NextResponse.json({ message: 'This is a protected route' });
-};
+// export const GET = (req: Request) => {
+//   return NextResponse.json({ message: 'This is a protected route' });
+// };

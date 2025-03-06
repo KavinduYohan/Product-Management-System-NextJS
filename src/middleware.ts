@@ -7,7 +7,6 @@ export function middleware(request: NextRequest) {
  
   const protectedRoutes = ['/dashboard', '/productDetails'];
 
-
   if (protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
     if (!token) {
       const loginUrl = new URL('/login', request.url);
