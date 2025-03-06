@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Dashboard() {
   const [products, setProducts] = useState<{ id: string | number; name: string; description: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string } | null>(null); // Track the product being edited
-
+  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -21,6 +23,7 @@ export default function Dashboard() {
 
   const handleDelete = async (id: string | number) => {
     await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    toast.success('Product deleted successfully');
     fetchProducts();
   };
 
@@ -29,24 +32,25 @@ export default function Dashboard() {
     if (!name || !description) return;
 
     if (editingProduct) {
-      // Update existing product
       await fetch(`/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, description }),
       });
+      toast.success('Product updated successfully');
       setEditingProduct(null);
     } else {
-      // Add new product
       await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, description }),
       });
+      toast.success('Product added successfully');
     }
 
     setName('');
     setDescription('');
+    setIsModalOpen(false);
     fetchProducts();
   };
 
@@ -54,65 +58,37 @@ export default function Dashboard() {
     setEditingProduct(product);
     setName(product.name);
     setDescription(product.description);
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Product Dashboard</h1>
+    <div className="min-h-screen bg-white text-black p-6">
+      <ToastContainer position="top-right" autoClose={3000} />
 
-      {/* Search Input */}
-      <input
-        type="text"
-        placeholder="Search products..."
-        className="border p-2 rounded w-full mb-4"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          fetchProducts(e.target.value);
-        }}
-      />
+      <h1 className="text-3xl font-bold mb-6 text-center">Product Dashboard</h1>
 
-      {/* Add/Edit Product Form */}
-      <form onSubmit={handleSubmit} className="bg-black shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-xl font-bold mb-4">{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+      <div className="mb-4 flex justify-between items-center">
         <input
           type="text"
-          placeholder="Product Name"
-          className="border p-2 rounded w-full mb-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <textarea
-          placeholder="Product Description"
-          className="border p-2 rounded w-full mb-2"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Search products..."
+          className="border p-2 rounded w-1/2"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            fetchProducts(e.target.value);
+          }}
         />
         <button
-          type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => setIsModalOpen(true)}
         >
-          {editingProduct ? 'Update Product' : 'Add Product'}
+          Add Product
         </button>
-        {editingProduct && (
-          <button
-            type="button"
-            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            onClick={() => {
-              setEditingProduct(null);
-              setName('');
-              setDescription('');
-            }}
-          >
-            Cancel
-          </button>
-        )}
-      </form>
+      </div>
 
-      {/* Product List */}
-      <table className="w-full border-collapse border border-gray-200">
+      <table className="w-full border-collapse border border-gray-300">
         <thead>
-          <tr className="bg-black-100">
+          <tr className="bg-gray-200">
             <th className="border p-2">ID</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Description</th>
@@ -125,15 +101,15 @@ export default function Dashboard() {
               <td className="border p-2">{product.id}</td>
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">{product.description}</td>
-              <td className="border p-2">
+              <td className="border p-2 flex gap-2">
                 <button
-                  className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                   onClick={() => handleEdit(product)}
                 >
                   Edit
                 </button>
                 <button
-                  className="bg-red-500 text-white px-2 py-1 rounded"
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   onClick={() => handleDelete(product.id)}
                 >
                   Delete
@@ -143,6 +119,50 @@ export default function Dashboard() {
           ))}
         </tbody>
       </table>
+
+      {/* Modal Popup for Adding/Editing Products */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="Product Name"
+                className="border p-2 rounded w-full mb-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <textarea
+                placeholder="Product Description"
+                className="border p-2 rounded w-full mb-2"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  {editingProduct ? 'Update' : 'Add'}
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setEditingProduct(null);
+                    setName('');
+                    setDescription('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

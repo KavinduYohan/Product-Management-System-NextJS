@@ -40,17 +40,17 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Login</h1>
-        <form onSubmit={handleLogin} style={styles.form}>
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-[#667eea] to-[#764ba2] p-5">
+      <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-md text-center">
+        <h1 className="text-2xl font-bold mb-5 text-gray-800">Login</h1>
+        <form onSubmit={handleLogin} className="flex flex-col">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required 
-            style={styles.input}
+            className="p-2.5 mb-4 rounded border border-gray-300 text-base outline-none transition-colors duration-300 focus:border-[#667eea]"
           />
           <input
             type="password"
@@ -58,11 +58,17 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required 
-            style={styles.input}
+            className="p-2.5 mb-4 rounded border border-gray-300 text-base outline-none transition-colors duration-300 focus:border-[#667eea]"
           />
-          <button type="submit" style={styles.button}>Login</button>
+          <button 
+            type="submit" 
+            className="p-2.5 rounded bg-[#667eea] text-white text-base cursor-pointer transition-colors duration-300 hover:bg-[#5a6ecb]"
+          >
+            Login
+          </button>
         </form>
-        {error && <p style={styles.error}>{error}</p>}
+        {error && <p className="text-red-500 mt-2.5 text-sm">{error}</p>}
+        <p className="mt-4 text-sm text-gray-600">New user? <a href="/register" className="text-[#667eea] hover:underline">Register here</a></p>
       </div>
       <ToastContainer
         position="top-right"
@@ -80,59 +86,3 @@ const Login = () => {
 };
 
 export default Login;
-
-import { CSSProperties } from 'react';
-
-const styles: { [key: string]: CSSProperties } = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: '20px',
-  },
-  card: {
-    background: '#fff',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    padding: '40px',
-    width: '100%',
-    maxWidth: '400px',
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-    color: '#333',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column' as 'column',
-  },
-  input: {
-    padding: '10px',
-    marginBottom: '15px',
-    borderRadius: '5px',
-    border: '1px solid #ddd',
-    fontSize: '16px',
-    outline: 'none',
-    transition: 'border-color 0.3s ease',
-  },
-  button: {
-    padding: '10px',
-    borderRadius: '5px',
-    border: 'none',
-    background: '#667eea',
-    color: '#fff',
-    fontSize: '16px',
-    cursor: 'pointer',
-    transition: 'background 0.3s ease',
-  },
-  error: {
-    color: 'red',
-    marginTop: '10px',
-    fontSize: '14px',
-  },
-};
