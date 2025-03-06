@@ -1,25 +1,14 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { connectDB, getDB } from '@/db/db';
 
-// Ensure the database is connected before handling requests
-const ensureDBConnection = async () => {
-  try {
-    await connectDB();  // Wait for the DB connection to establish
-  } catch (error) {
-    console.error('Error connecting to the database:', error);
-    throw new Error('Database connection failed');
-  }
-};
-
 export const POST = async (req: Request) => {
-  // Ensure DB connection is established
-  await ensureDBConnection();
+
+  await connectDB();
 
   const { email, password } = await req.json();
-  
-  // Now that DB is connected, safely access it
-  const db = getDB();
+  const db = getDB(); 
 
   try {
     const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
@@ -28,14 +17,30 @@ export const POST = async (req: Request) => {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
     }
 
-    // Compare the provided password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
     }
 
-    return NextResponse.json({ message: 'Login successful' });
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' }
+    );
+
+    const response = NextResponse.json({ message: 'Login successful' });
+
+ 
+    response.cookies.set('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600, 
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

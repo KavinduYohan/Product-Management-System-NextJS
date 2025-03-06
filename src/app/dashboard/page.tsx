@@ -91,7 +91,7 @@ export default function Dashboard() {
     setIsModalOpen(true);
   };
 
-  // Pagination logic
+  // Pagination 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -194,7 +194,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Modal Popup for Adding/Editing Products */}
+    
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -249,7 +249,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Product Detail Page Link */}
+      
       <div className="mt-6 text-center">
         <Link href="/productDetails" className="text-blue-500 hover:underline text-lg">
           Product Detail Page

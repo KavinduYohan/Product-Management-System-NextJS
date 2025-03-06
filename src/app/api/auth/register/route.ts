@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { connectDB, getDB } from '@/db/db';
 
-// Ensure the database is connected before handling requests
+
 const ensureDBConnection = async () => {
   try {
-    await connectDB();  // Wait for the DB connection to establish
+    await connectDB();  
   } catch (error) {
     console.error('Error connecting to the database:', error);
     throw new Error('Database connection failed');
@@ -13,12 +13,12 @@ const ensureDBConnection = async () => {
 };
 
 export const POST = async (req: Request) => {
-  // Ensure DB connection is established
+  
   await ensureDBConnection();
 
   const { username, email, password } = await req.json();
   
-  // Now that DB is connected, safely access it
+
   const db = getDB();
 
   try {

@@ -23,7 +23,7 @@ const Login = () => {
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('token', data.token); // Save the token
+        localStorage.setItem('token', data.token); 
         toast.success('Login successful! Redirecting...'); 
         setTimeout(() => {
           router.push('/dashboard');

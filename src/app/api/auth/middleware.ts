@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-// Extend the NextRequest type to include the `user` property
 interface CustomNextRequest extends NextRequest {
   user?: any; 
 }

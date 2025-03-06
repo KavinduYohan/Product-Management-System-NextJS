@@ -5,12 +5,12 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Configure multer for file uploads
+
 const upload = multer({ dest: 'uploads/' });
 
 export const config = {
   api: {
-    bodyParser: false, // Disable the default body parser to handle multipart/form-data
+    bodyParser: false,
   },
 };
 
@@ -28,7 +28,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   await connectDB();
   const db = getDB();
 
-  // Parse the form data
+ 
   const formData = await req.formData();
   const name = formData.get('name') as string;
   const description = formData.get('description') as string;
