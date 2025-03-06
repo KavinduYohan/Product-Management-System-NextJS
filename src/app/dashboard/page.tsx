@@ -5,12 +5,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
 export default function Dashboard() {
-  const [products, setProducts] = useState<{ id: string | number; name: string; description: string; quantity: number }[]>([]);
+  const [products, setProducts] = useState<{ id: string | number; name: string; description: string; quantity: number; image_url: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string; quantity: number } | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string; quantity: number; image_url: string } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 10;
@@ -36,19 +37,25 @@ export default function Dashboard() {
     e.preventDefault();
     if (!name || !description || quantity < 1) return;
 
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('description', description);
+    formData.append('quantity', quantity.toString());
+    if (image) {
+      formData.append('image', image);
+    }
+
     if (editingProduct) {
       await fetch(`/api/products/${editingProduct.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, quantity }),
+        body: formData,
       });
       toast.success('Product updated successfully');
       setEditingProduct(null);
     } else {
       await fetch('/api/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, quantity }),
+        body: formData,
       });
       toast.success('Product added successfully');
     }
@@ -56,11 +63,12 @@ export default function Dashboard() {
     setName('');
     setDescription('');
     setQuantity(1);
+    setImage(null);
     setIsModalOpen(false);
     fetchProducts();
   };
 
-  const handleEdit = (product: { id: string | number; name: string; description: string; quantity: number }) => {
+  const handleEdit = (product: { id: string | number; name: string; description: string; quantity: number; image_url: string }) => {
     setEditingProduct(product);
     setName(product.name);
     setDescription(product.description);
@@ -106,6 +114,7 @@ export default function Dashboard() {
             <th className="border p-2">Name</th>
             <th className="border p-2">Description</th>
             <th className="border p-2">Quantity</th>
+            <th className="border p-2">Image</th>
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
@@ -116,7 +125,10 @@ export default function Dashboard() {
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">{product.description}</td>
               <td className="border p-2">{product.quantity}</td>
-              <td className="border p-2 flex gap-2 items-center">
+              <td className="border p-2">
+                {product.image_url && <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover" />}
+              </td>
+              <td className="p-2 flex gap-2 items-center">
                 <button
                   className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                   onClick={() => handleEdit(product)}
@@ -182,6 +194,11 @@ export default function Dashboard() {
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
+              <input
+                type="file"
+                className="border p-2 rounded w-full mb-2"
+                onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+              />
               <div className="flex justify-end gap-2">
                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                   {editingProduct ? 'Update' : 'Add'}
@@ -195,6 +212,7 @@ export default function Dashboard() {
                     setName('');
                     setDescription('');
                     setQuantity(1);
+                    setImage(null);
                   }}
                 >
                   Cancel

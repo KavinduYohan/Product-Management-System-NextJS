@@ -1,5 +1,17 @@
 import { NextResponse } from 'next/server';
 import { connectDB, getDB } from '@/db/db';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable the default body parser to handle multipart/form-data
+  },
+};
 
 const ensureDBConnection = async () => {
   try {
@@ -19,13 +31,31 @@ export async function GET() {
 
 export async function POST(req: Request) {
   await ensureDBConnection();
-  const newProduct = await req.json();
   const db = getDB();
-  
-  await db.run('INSERT INTO products (name, description, quantity) VALUES (?, ?, ?)', [
-    newProduct.name,
-    newProduct.description,
-    newProduct.quantity,
+
+  // Parse the form data
+  const formData = await req.formData();
+  const name = formData.get('name') as string;
+  const description = formData.get('description') as string;
+  const quantity = formData.get('quantity') as string;
+  const image = formData.get('image') as File | null;
+
+  let imageUrl = '';
+  if (image) {
+    // Save the uploaded file to the 'uploads' directory
+    const filePath = path.join(process.cwd(), 'uploads', image.name);
+    const buffer = await image.arrayBuffer();
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+    imageUrl = `/uploads/${image.name}`;
+  }
+
+  // Insert the new product into the database
+  await db.run('INSERT INTO products (name, description, quantity, image_url) VALUES (?, ?, ?, ?)', [
+    name,
+    description,
+    quantity,
+    imageUrl,
   ]);
-  return NextResponse.json(newProduct);
+
+  return NextResponse.json({ message: 'Product added successfully' });
 }

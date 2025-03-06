@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
-import { connectDB, getDB } from '@/db/db';
-
 import { NextRequest } from 'next/server';
+import { connectDB, getDB } from '@/db/db';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable the default body parser to handle multipart/form-data
+  },
+};
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
@@ -14,16 +25,33 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
- 
-  const { id } = await params;
-  const { name, description, quantity } = await req.json();
-  
   await connectDB();
   const db = getDB();
-  
-  
-  await db.run('UPDATE products SET name = ?, description = ?, quantity = ? WHERE id = ?', [name, description, quantity, id]);
-  
+
+  // Parse the form data
+  const formData = await req.formData();
+  const name = formData.get('name') as string;
+  const description = formData.get('description') as string;
+  const quantity = formData.get('quantity') as string;
+  const image = formData.get('image') as File | null;
+
+  let imageUrl = '';
+  if (image) {
+    
+    const filePath = path.join(process.cwd(), 'uploads', image.name);
+    const buffer = await image.arrayBuffer();
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+    imageUrl = `/uploads/${image.name}`;
+  }
+
+  await db.run('UPDATE products SET name = ?, description = ?, quantity = ?, image_url = ? WHERE id = ?', [
+    name,
+    description,
+    quantity,
+    imageUrl,
+    params.id,
+  ]);
+
   return NextResponse.json({ message: 'Product updated successfully' });
 }
 
