@@ -32,7 +32,22 @@ export default function Dashboard() {
     toast.success('Product deleted successfully');
     fetchProducts();
   };
-
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      const data = await res.json();
+  
+      if (res.ok) {
+        toast.success("Logged out successfully");
+        window.location.href = "/login";
+      } else {
+        toast.error(data.message || "Logout failed");
+      }
+    } catch (error) {
+      toast.error("An error occurred while logging out");
+    }
+  };
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name || !description || quantity < 1) return;
@@ -105,6 +120,14 @@ export default function Dashboard() {
         >
           Add Product
         </button>
+
+
+        <button
+  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+  onClick={handleLogout}
+>
+  Logout
+</button>
       </div>
 
       <table className="w-full border-collapse border border-gray-300">
@@ -126,8 +149,11 @@ export default function Dashboard() {
               <td className="border p-2">{product.description}</td>
               <td className="border p-2">{product.quantity}</td>
               <td className="border p-2">
-                {product.image_url && <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover" />}
-              </td>
+  {product.image_url && (
+    <img src={product.image_url.startsWith('/uploads') ? product.image_url : `/uploads/${product.image_url}`} alt={product.name} className="w-16 h-16 object-cover" />
+  )}
+</td>
+
               <td className="p-2 flex gap-2 items-center">
                 <button
                   className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
