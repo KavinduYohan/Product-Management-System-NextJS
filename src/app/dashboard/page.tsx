@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const [products, setProducts] = useState<{ id: string | number; name: string; description: string; quantity: number }[]>([]);
@@ -11,7 +12,6 @@ export default function Dashboard() {
   const [quantity, setQuantity] = useState<number>(1);
   const [editingProduct, setEditingProduct] = useState<{ id: string | number; name: string; description: string; quantity: number } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 10;
 
@@ -72,7 +72,6 @@ export default function Dashboard() {
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-
   const totalPages = Math.ceil(products.length / productsPerPage);
 
   return (
@@ -117,7 +116,7 @@ export default function Dashboard() {
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">{product.description}</td>
               <td className="border p-2">{product.quantity}</td>
-              <td className="border p-2 flex gap-2">
+              <td className="border p-2 flex gap-2 items-center">
                 <button
                   className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                   onClick={() => handleEdit(product)}
@@ -184,10 +183,7 @@ export default function Dashboard() {
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
               <div className="flex justify-end gap-2">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                   {editingProduct ? 'Update' : 'Add'}
                 </button>
                 <button
@@ -208,6 +204,13 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Product Detail Page Link */}
+      <div className="mt-6 text-center">
+        <Link href="/productDetails" className="text-blue-500 hover:underline text-lg">
+          Product Detail Page
+        </Link>
+      </div>
     </div>
   );
 }
