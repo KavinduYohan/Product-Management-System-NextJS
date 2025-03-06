@@ -31,3 +31,4 @@ POST /api/auth/login -Login a user
 ![Register](https://github.com/user-attachments/assets/e1e519a0-3779-4aba-a1e5-57004dac1648)
 ![ProductList](https://github.com/user-attachments/assets/0af2e753-575d-40d3-a187-6af5b45b65e5)
 ![Login](https://github.com/user-attachments/assets/db05b47e-f02c-4c18-82c6-3555f5a09096)
+![ProductDetails](https://github.com/user-attachments/assets/ab99d92d-3f23-48ea-934b-2e5f2efac403)
