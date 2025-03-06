@@ -21,10 +21,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   await connectDB();
   const db = getDB();
   
+  
   await db.run('UPDATE products SET name = ?, description = ?, quantity = ? WHERE id = ?', [name, description, quantity, id]);
   
   return NextResponse.json({ message: 'Product updated successfully' });
 }
+
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
   const db = getDB();

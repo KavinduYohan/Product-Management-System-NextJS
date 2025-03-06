@@ -14,7 +14,7 @@ export const middleware = (req: CustomNextRequest) => {
   }
 
   try {
-    const decoded = jwt.verify(token, 'your-secret-key');
+    const decoded = jwt.verify(token, '1234');
     req.user = decoded; 
     return NextResponse.next();
   } catch (error) {
