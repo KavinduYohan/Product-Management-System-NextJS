@@ -7,7 +7,6 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 ## Available API endpoints 
 
 * POST /api/products - Create a new product
