@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB, getDB } from '@/db/db';
-import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-
-
-const upload = multer({ dest: 'uploads/' });
 
 export const config = {
   api: {

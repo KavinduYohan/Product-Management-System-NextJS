@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { connectDB, getDB } from '@/db/db';
-import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-
-
-const upload = multer({ dest: 'uploads/' });
 
 export const config = {
   api: {
@@ -14,19 +10,22 @@ export const config = {
   },
 };
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const db = getDB();
-  const product = await db.get('SELECT * FROM products WHERE id = ?', [params.id]);
+  const resolvedParams = await params;
+  const product = await db.get('SELECT * FROM products WHERE id = ?', [resolvedParams.id]);
   if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
   return NextResponse.json(product);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const db = getDB();
+
+  const resolvedParams = await params;
 
  
   const formData = await req.formData();
@@ -49,15 +48,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     description,
     quantity,
     imageUrl,
-    params.id,
+    resolvedParams.id,
   ]);
 
   return NextResponse.json({ message: 'Product updated successfully' });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const db = getDB();
-  await db.run('DELETE FROM products WHERE id = ?', [params.id]);
+  const resolvedParams = await params;
+  await db.run('DELETE FROM products WHERE id = ?', [resolvedParams.id]);
   return NextResponse.json({ message: 'Product deleted successfully' });
 }

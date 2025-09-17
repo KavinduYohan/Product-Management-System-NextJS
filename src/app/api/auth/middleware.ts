@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 interface CustomNextRequest extends NextRequest {
-  user?: any; 
+  user?: jwt.JwtPayload | string; 
 }
 
 export const middleware = (req: CustomNextRequest) => {
@@ -16,7 +16,7 @@ export const middleware = (req: CustomNextRequest) => {
     const decoded = jwt.verify(token, '1234');
     req.user = decoded; 
     return NextResponse.next();
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 };
